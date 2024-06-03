@@ -9,6 +9,17 @@ The Pico is assembled and flashed with the PiKVM image, and connected to the hos
 
 When I'm done with it, I can use it with my PiKVM, since it's the same protocol.
 
+## How to run:
+
+`python pico-bridge.py`
+
+## How to exit:
+
+Press scroll-lock
+
+
+## Thanks
+
 Thanks to Maxim Devaev and PiKVM contributors for doing all the hard work.
 
 License: GPL v3.0 (the same as PiKVM [kvmd](https://github.com/pikvm/kvmd) where most of the code for this came from)
