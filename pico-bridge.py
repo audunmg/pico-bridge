@@ -102,7 +102,6 @@ def read_resp(r):
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
-BACKGROUND = (255,255,255)
 
 s = serial.Serial('/dev/serial/by-id/usb-PiKVM_PiKVM_HID_Bridge_E66180101745C339-if00')
 
@@ -122,16 +121,16 @@ clock = pygame.time.Clock()
 
 font = pygame.font.Font(None, 30)
 
+black = (0,0,0)
+white = (255,255,255)
 def draw():
-    screen.fill(BACKGROUND)
-    text = font.render("text", True, (0,0,0))
-    screen.blit(text, (10,10))
+    screen.fill( black )
     if state["online"]:
-        text = font.render("Num", True, (0,0,0))
+        text = font.render("Num", True, white)
         screen.blit(text, (116,25))
-        text = font.render("Caps", True, (0,0,0))
+        text = font.render("Caps", True, white)
         screen.blit(text, (172,25))
-        text = font.render("Scroll", True, (0,0,0))
+        text = font.render("Scroll", True, white)
         screen.blit(text, (245,25))
         if state["keyboard"]["leds"]["num"]:
             pygame.draw.rect(screen, (0,255,0), ((119,6), (31,13)))
@@ -144,8 +143,8 @@ def draw():
 
 
 run = True
-pygame.event.set_keyboard_grab = True
-pygame.event.set_grab(True)
+pygame.display.set_caption = "Pico-HID Bridge"
+
 pygame.mouse.set_visible(False)
 mousebuttons = [ "", "left", "middle", "right", "up", "down"]
 
@@ -161,6 +160,10 @@ while run:
         check_state(resp)
         state = read_resp(resp)
         last_status = pygame.time.get_ticks()
+        if state["mouse"]["absolute"]:
+            pygame.event.set_grab(True)
+            pygame.event.set_keyboard_grab(True)
+
 
     # In case we forget to read the response:
     if s.in_waiting > 0:
@@ -170,7 +173,8 @@ while run:
     # Get mouse and keyboard events
     for event in pygame.event.get():
         if (event.type == pygame.MOUSEMOTION):
-            pygame.mouse.set_pos((WIDTH/2, HEIGHT/2  ))
+            if state["mouse"]["absolute"]:
+                pygame.mouse.set_pos((WIDTH/2, HEIGHT/2  ))
             s.write(proto.MouseRelativeEvent( event.rel[0], event.rel[1] ).make_request())
             s.flush()
             resp = s.read(8)
