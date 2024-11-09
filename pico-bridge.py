@@ -103,7 +103,8 @@ WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 
-s = serial.Serial('/dev/serial/by-id/usb-PiKVM_PiKVM_HID_Bridge_E66180101745C339-if00')
+
+s = serial.Serial(sys.argv[1])
 
 s.timeout = 1
 s.write(proto.REQUEST_PING)
@@ -175,7 +176,18 @@ while run:
         if (event.type == pygame.MOUSEMOTION):
             if state["mouse"]["absolute"]:
                 pygame.mouse.set_pos((WIDTH/2, HEIGHT/2  ))
-            s.write(proto.MouseRelativeEvent( event.rel[0], event.rel[1] ).make_request())
+            x = event.rel[0]
+            if x > 127:
+                x = 127
+            elif x < -127:
+                x = -127
+            y = event.rel[0]
+            if y > 127:
+                y = 127
+            elif y < -127:
+                y = -127
+
+            s.write(proto.MouseRelativeEvent( x, y ).make_request())
             s.flush()
             resp = s.read(8)
             check_state(resp)
