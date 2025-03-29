@@ -3,6 +3,7 @@
 import pygame
 import serial
 import proto
+import sys
 
 from mappings import KEYMAP
 from keymap import pico_to_pygame
